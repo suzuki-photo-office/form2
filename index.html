@@ -6,81 +6,139 @@
     <title>予約フォーム</title>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <style>
-        body { font-family: sans-serif; padding: 20px; background-color: #f4f4f4; color: #333; }
-        h2 { text-align: center; font-size: 18px; margin-bottom: 20px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
-        input { width: 100%; padding: 12px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; }
-        button { width: 100%; padding: 14px; background-color: #06C755; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        button:disabled { background-color: #cccccc; cursor: not-allowed; }
+        body { font-family: sans-serif; padding: 20px; background-color: #f4f4f4; color: #333; line-height: 1.6; }
+        h2 { text-align: center; font-size: 18px; margin-bottom: 20px; color: #111; }
+        .form-group { margin-bottom: 20px; background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        label { display: block; margin-bottom: 8px; font-weight: bold; font-size: 14px; }
+        .required::after { content: " *"; color: #ff4d4f; }
+        input[type="text"], input[type="tel"], input[type="datetime-local"] { 
+            width: 100%; padding: 12px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; background: #fafafa;
+        }
+        input:focus { border-color: #06C755; background: #fff; outline: none; }
+        .checkbox-group { display: flex; flex-direction: column; gap: 10px; margin-top: 5px; }
+        .checkbox-label { display: flex; align-items: center; font-weight: normal; font-size: 15px; cursor: pointer; }
+        .checkbox-label input { width: 20px; height: 20px; margin-right: 10px; accent-color: #06C755; }
+        button { width: 100%; padding: 14px; background-color: #06C755; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        button:disabled { background-color: #cccccc; cursor: not-allowed; box-shadow: none; }
+        button:active { background-color: #05a647; }
     </style>
 </head>
 <body>
 
     <h2>ご予約フォーム</h2>
+    
     <div class="form-group">
-        <label for="name">お名前</label>
+        <label for="name" class="required">お名前</label>
         <input type="text" id="name" placeholder="例：山田 太郎">
     </div>
+
     <div class="form-group">
-        <label for="datetime">ご希望日時</label>
-        <input type="datetime-local" id="datetime">
+        <label for="phone" class="required">お電話番号</label>
+        <input type="tel" id="phone" placeholder="例：09012345678">
     </div>
+
+    <div class="form-group">
+        <label for="address" class="required">ご住所</label>
+        <input type="text" id="address" placeholder="例：東京都渋谷区○○1-2-3">
+    </div>
+
+    <div class="form-group">
+        <label for="date1" class="required">希望日①</label>
+        <input type="datetime-local" id="date1">
+    </div>
+
+    <div class="form-group">
+        <label for="date2" class="required">希望日②</label>
+        <input type="datetime-local" id="date2">
+    </div>
+
+    <div class="form-group">
+        <label for="date3">希望日③（任意）</label>
+        <input type="datetime-local" id="date3">
+    </div>
+
+    <div class="form-group">
+        <label class="required">ご希望の撮影内容（複数選択可）</label>
+        <div class="checkbox-group">
+            <label class="checkbox-label"><input type="checkbox" name="photo_type" value="スタジオニューボーンフォト">スタジオニューボーンフォト</label>
+            <label class="checkbox-label"><input type="checkbox" name="photo_type" value="出張ニューボーンフォト">出張ニューボーンフォト</label>
+            <label class="checkbox-label"><input type="checkbox" name="photo_type" value="七五三">七五三</label>
+            <label class="checkbox-label"><input type="checkbox" name="photo_type" value="バースデー">バースデー</label>
+            <label class="checkbox-label"><input type="checkbox" name="photo_type" value="お宮参り">お宮参り</label>
+            <label class="checkbox-label"><input type="checkbox" name="photo_type" value="入園入学">入園入学</label>
+            <label class="checkbox-label"><input type="checkbox" name="photo_type" value="その他">その他</label>
+        </div>
+    </div>
+
     <button id="submitBtn" onclick="submitForm()" disabled>読み込み中...</button>
 
     <script>
-        // 【重要】ご自身のLIFF ID（英数字の文字列）に変えてください
-        const MY_LIFF_ID = '2006407169-V0YJVRIl'; 
+        // 【重要】ご自身のLIFF ID（前回と同じもの）に書き換えてください
+        const MY_LIFF_ID = '2006407169-V0YJVR1l'; 
 
-        // ページ読み込み時の処理
+        // 初期化処理
         document.addEventListener("DOMContentLoaded", function() {
             liff.init({ liffId: MY_LIFF_ID })
                 .then(() => {
-                    // LINE環境で開かれているか、ログインしているか確認
                     if (!liff.isLoggedIn()) {
                         liff.login();
                     } else {
-                        // LIFFが正常に初期化されたらボタンを有効化
                         const btn = document.getElementById('submitBtn');
                         btn.disabled = false;
                         btn.innerText = '予約内容を送信する';
                     }
                 })
                 .catch((err) => { 
-                    alert('LIFFの初期化に失敗しました。IDが正しいか確認してください。');
-                    console.error('LIFF初期化失敗', err); 
+                    alert('初期化失敗。IDを確認してください。');
                 });
         });
 
-        // ボタン送信時の処理
+        // 送信処理
         function submitForm() {
-            const name = document.getElementById('name').value;
-            const datetime = document.getElementById('datetime').value;
+            const name = document.getElementById('name').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const address = document.getElementById('address').value.trim();
+            const date1 = document.getElementById('date1').value;
+            const date2 = document.getElementById('date2').value;
+            const date3 = document.getElementById('date3').value;
 
-            if (!name || !datetime) {
-                alert('すべての項目を入力してください。');
+            // チェックボックスの選択内容をまとめる
+            const checkboxes = document.querySelectorAll('input[name="photo_type"]:checked');
+            const photoTypes = [];
+            checkboxes.forEach((cb) => { photoTypes.push(cb.value); });
+
+            // 必須項目のチェック
+            if (!name || !phone || !address || !date1 || !date2 || photoTypes.length === 0) {
+                alert('必須項目(*)の入力と、撮影内容の選択を1つ以上おこなってください。');
                 return;
             }
 
-            const formattedDate = datetime.replace('T', ' ');
+            // 日時の表示を見やすく綺麗にする関数
+            const formatDate = (dt) => dt ? dt.replace('T', ' ') : 'なし';
 
-            // 念のため、送信前にメッセージ送信権限（最重要）があるかプログラム側でチェック
-            if (!liff.isApiAvailable('shareTargetPicker') && !liff.isInClient()) {
-                alert('この環境からはメッセージを送信できません。LINEアプリ内のチャットから開いてください。');
-                return;
-            }
+            // チャットに送信するテキストの組み立て
+            const messageText = `【予約申込】
+■お名前：${name}
+■お電話番号：${phone}
+■ご住所：${address}
+■希望日①：${formatDate(date1)}
+■希望日②：${formatDate(date2)}
+■希望日③：${formatDate(date3)}
+■ご希望の撮影内容：
+${photoTypes.map(type => `・${type}`).join('\n')}
 
-            // メッセージ送信処理
+上記の内容で予約を送信しました。確定までしばらくお待ちください。`;
+
+            // LINEにメッセージを送信
             liff.sendMessages([
                 {
                     type: 'text',
-                    text: `【予約申込】\nお名前：${name}\n希望日時：${formattedDate}\n\n上記の内容で予約を送信しました。確定までしばらくお待ちください。`
+                    text: messageText
                 }
             ]).then(() => {
-                liff.closeWindow(); // 成功したら閉じる
+                liff.closeWindow();
             }).catch((err) => {
-                // エラーの詳細を画面に出して原因を特定しやすくします
-                alert('送信エラー詳細: ' + err.code + ' - ' + err.message);
+                alert('送信エラーが発生しました。');
                 console.error(err);
             });
         }
