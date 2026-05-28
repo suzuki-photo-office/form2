@@ -3,78 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>予約フォーム</title>
+    <title>スタジオニューボーンフォトご予約</title>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <style>
-        body { font-family: sans-serif; padding: 20px; background-color: #f4f4f4; color: #333; line-height: 1.6; }
-        h2 { text-align: center; font-size: 18px; margin-bottom: 20px; color: #111; }
-        .form-group { margin-bottom: 20px; background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        label { display: block; margin-bottom: 8px; font-weight: bold; font-size: 14px; }
-        .required::after { content: " *"; color: #ff4d4f; }
+        /* 本家LINEフォーム風のモダン＆スタイリッシュなデザイン */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f8f9fa; color: #333; padding: 20px 16px 40px 16px; }
+        
+        .container { max-width: 500px; margin: 0 auto; }
+        h2 { font-size: 20px; font-weight: 700; margin-bottom: 8px; color: #111; text-align: center; }
+        .subtitle { font-size: 13px; color: #666; text-align: center; margin-bottom: 24px; }
+        
+        .form-group { background: #ffffff; padding: 20px 16px; border-radius: 12px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.02); border: 1px solid #eaeaea; }
+        label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 10px; color: #222; }
+        .required-badge { background-color: #ff4d4f; color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-left: 6px; vertical-align: middle; }
+        .optional-badge { background-color: #8c8c8c; color: white; font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-left: 6px; vertical-align: middle; }
+        
         input[type="text"], input[type="tel"], input[type="datetime-local"] { 
-            width: 100%; padding: 12px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; background: #fafafa;
+            width: 100%; padding: 14px; border: 1px solid #d9d9d9; border-radius: 8px; font-size: 16px; background: #fff; color: #333; transition: all 0.2s; -webkit-appearance: none;
         }
-        input:focus { border-color: #06C755; background: #fff; outline: none; }
-        .checkbox-group { display: flex; flex-direction: column; gap: 10px; margin-top: 5px; }
-        .checkbox-label { display: flex; align-items: center; font-weight: normal; font-size: 15px; cursor: pointer; }
-        .checkbox-label input { width: 20px; height: 20px; margin-right: 10px; accent-color: #06C755; }
-        button { width: 100%; padding: 14px; background-color: #06C755; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        button:disabled { background-color: #cccccc; cursor: not-allowed; box-shadow: none; }
-        button:active { background-color: #05a647; }
+        input:focus { border-color: #06C755; outline: none; background: #fff; box-shadow: 0 0 0 3px rgba(6, 199, 85, 0.1); }
+        input::placeholder { color: #bfbfbf; font-size: 15px; }
+        
+        .note { font-size: 12px; color: #8c8c8c; margin-top: 6px; line-height: 1.4; }
+        
+        /* ボタンのデザイン */
+        .btn-area { margin-top: 24px; }
+        button { width: 100%; padding: 16px; background-color: #06C755; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(6, 199, 85, 0.2); transition: all 0.2s; }
+        button:disabled { background-color: #d9d9d9; color: #8c8c8c; cursor: not-allowed; box-shadow: none; }
+        button:active { background-color: #05a647; transform: scale(0.99); }
     </style>
 </head>
 <body>
 
-    <h2>ご予約フォーム</h2>
-    
-    <div class="form-group">
-        <label for="name" class="required">お名前</label>
-        <input type="text" id="name" placeholder="例：鈴木 花子">
-    </div>
+    <div class="container">
+        <h2>スタジオニューボーン予約</h2>
+        <p class="subtitle">必要事項をご入力の上、送信してください。</p>
+        
+        <div class="form-group">
+            <label for="name">お名前<span class="required-badge">必須</span></label>
+            <input type="text" id="name" placeholder="例：山田 太郎">
+        </div>
 
-    <div class="form-group">
-        <label for="phone" class="required">お電話番号</label>
-        <input type="tel" id="phone" placeholder="例：090-1234-5678">
-    </div>
+        <div class="form-group">
+            <label for="phone">お電話番号<span class="required-badge">必須</span></label>
+            <input type="tel" id="phone" placeholder="例：09012345678">
+        </div>
 
-    <div class="form-group">
-        <label for="address" class="required">ご住所</label>
-        <input type="text" id="address" placeholder="例：大阪府高槻市○○1-2-3">
-    </div>
+        <div class="form-group">
+            <label for="address">ご住所<span class="required-badge">必須</span></label>
+            <input type="text" id="address" placeholder="例：東京都渋谷区○○1-2-3">
+        </div>
 
-    <div class="form-group">
-        <label for="date1" class="required">希望日①</label>
-        <input type="datetime-local" id="date1">
-    </div>
+        <div class="form-group">
+            <label for="date1">希望日時①<span class="required-badge">必須</span></label>
+            <input type="datetime-local" id="date1">
+        </div>
 
-    <div class="form-group">
-        <label for="date2" class="required">希望日②</label>
-        <input type="datetime-local" id="date2">
-    </div>
+        <div class="form-group">
+            <label for="date2">希望日時②<span class="required-badge">必須</span></label>
+            <input type="datetime-local" id="date2">
+        </div>
 
-    <div class="form-group">
-        <label for="date3">希望日③（任意）</label>
-        <input type="datetime-local" id="date3">
-    </div>
+        <div class="form-group">
+            <label for="date3">希望日時③<span class="optional-badge">任意</span></label>
+            <input type="datetime-local" id="date3">
+        </div>
 
-    <div class="form-group">
-        <label class="required">ご希望の撮影内容（複数選択可）</label>
-        <div class="checkbox-group">
-            <label class="checkbox-label"><input type="checkbox" name="photo_type" value="スタジオニューボーンフォト">スタジオニューボーンフォト</label>
-            <label class="checkbox-label"><input type="checkbox" name="photo_type" value="出張ニューボーンフォト">出張ニューボーンフォト</label>
-            <label class="checkbox-label"><input type="checkbox" name="photo_type" value="七五三">七五三</label>
-            <label class="checkbox-label"><input type="checkbox" name="photo_type" value="バースデー">バースデー</label>
-            <label class="checkbox-label"><input type="checkbox" name="photo_type" value="お宮参り">お宮参り</label>
-            <label class="checkbox-label"><input type="checkbox" name="photo_type" value="入園入学">入園入学</label>
-            <label class="checkbox-label"><input type="checkbox" name="photo_type" value="その他">その他</label>
+        <div class="form-group">
+            <label for="comment">その他ご要望・伝達事項<span class="optional-badge">任意</span></label>
+            <input type="text" id="comment" placeholder="例：双子の撮影希望、一緒に撮りたい小物があるなど">
+            <p class="note">何か事前に伝えておきたいことがあればご記入ください。</p>
+        </div>
+
+        <div class="btn-area">
+            <button id="submitBtn" onclick="submitForm()" disabled>読み込み中...</button>
         </div>
     </div>
 
-    <button id="submitBtn" onclick="submitForm()" disabled>読み込み中...</button>
-
     <script>
-        // ご提示いただいた正しいLIFF IDを直接埋め込みました（末尾は大文字のアイ「I」）
-        const MY_LIFF_ID = "2006407169-V0YJVRIl"; 
+        // 【重要】スタジオニューボーンフォト用に新しく発行した「専用のLIFF ID」をここに貼ってください
+        const MY_LIFF_ID = "ここに新しいLIFF_IDを入れる"; 
 
         // 初期化処理
         document.addEventListener("DOMContentLoaded", function() {
@@ -105,27 +114,26 @@
             const date1 = document.getElementById('date1').value;
             const date2 = document.getElementById('date2').value;
             const date3 = document.getElementById('date3').value;
+            const comment = document.getElementById('comment').value.trim();
 
-            const checkboxes = document.querySelectorAll('input[name="photo_type"]:checked');
-            const photoTypes = [];
-            checkboxes.forEach((cb) => { photoTypes.push(cb.value); });
-
-            if (!name || !phone || !address || !date1 || !date2 || photoTypes.length === 0) {
-                alert('必須項目(*)の入力と、撮影内容の選択を1つ以上おこなってください。');
+            // 必須入力のバリデーション
+            if (!name || !phone || !address || !date1 || !date2) {
+                alert('必須項目をすべて入力してください。');
                 return;
             }
 
             const formatDate = (dt) => dt ? dt.replace('T', ' ') : 'なし';
+            const formatComment = comment ? comment : '特になし';
 
-            const messageText = `【予約申込】
+            // トークに送信するメッセージを構築
+            const messageText = `【予約申込】スタジオニューボーン
 ■お名前：${name}
 ■お電話番号：${phone}
 ■ご住所：${address}
 ■希望日①：${formatDate(date1)}
 ■希望日②：${formatDate(date2)}
 ■希望日③：${formatDate(date3)}
-■ご希望の撮影内容：
-${photoTypes.map(type => `・${type}`).join('\n')}
+■その他ご要望：${formatComment}
 
 上記の内容で予約を送信しました。確定までしばらくお待ちください。`;
 
