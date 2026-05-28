@@ -73,29 +73,24 @@
     <button id="submitBtn" onclick="submitForm()" disabled>読み込み中...</button>
 
     <script>
-        // 前回の画像から取得した文字列。末尾は小文字のエル(l)になるよう文字データを安全に固定しました
-        const MY_LIFF_ID = "2006407169-V0YJVRIl"; 
+        // 【重要】ご自身のLIFF ID（前回と同じもの）に書き換えてください
+        const MY_LIFF_ID = '2006407169-V0YJVRIl'; 
 
         // 初期化処理
         document.addEventListener("DOMContentLoaded", function() {
-            // 万が一IDが間違っていてもフリーズしないよう、確実にエラーをキャッチする構造に強化
-            try {
-                liff.init({ liffId: MY_LIFF_ID })
-                    .then(() => {
-                        if (!liff.isLoggedIn()) {
-                            liff.login();
-                        } else {
-                            const btn = document.getElementById('submitBtn');
-                            btn.disabled = false;
-                            btn.innerText = '予約内容を送信する';
-                        }
-                    })
-                    .catch((err) => { 
-                        alert('LINE通信エラー: ' + err.message);
-                    });
-            } catch (e) {
-                alert('プログラム実行エラー: ' + e.message);
-            }
+            liff.init({ liffId: MY_LIFF_ID })
+                .then(() => {
+                    if (!liff.isLoggedIn()) {
+                        liff.login();
+                    } else {
+                        const btn = document.getElementById('submitBtn');
+                        btn.disabled = false;
+                        btn.innerText = '予約内容を送信する';
+                    }
+                })
+                .catch((err) => { 
+                    alert('初期化失敗。IDを確認してください。');
+                });
         });
 
         // 送信処理
@@ -107,19 +102,34 @@
             const date2 = document.getElementById('date2').value;
             const date3 = document.getElementById('date3').value;
 
+            // チェックボックスの選択内容をまとめる
             const checkboxes = document.querySelectorAll('input[name="photo_type"]:checked');
             const photoTypes = [];
             checkboxes.forEach((cb) => { photoTypes.push(cb.value); });
 
+            // 必須項目のチェック
             if (!name || !phone || !address || !date1 || !date2 || photoTypes.length === 0) {
                 alert('必須項目(*)の入力と、撮影内容の選択を1つ以上おこなってください。');
                 return;
             }
 
+            // 日時の表示を見やすく綺麗にする関数
             const formatDate = (dt) => dt ? dt.replace('T', ' ') : 'なし';
 
-            const messageText = `【予約申込】\n■お名前：${name}\n■お電話番号：${phone}\n■ご住所：${address}\n■希望日①：${formatDate(date1)}\n■希望日②：${formatDate(date2)}\n■希望日③：${formatDate(date3)}\n■ご希望の撮影内容：\n${photoTypes.map(type => `・${type}`).join('\n')}\n\n上記の内容で予約を送信しました。確定までしばらくお待ちください。`;
+            // チャットに送信するテキストの組み立て
+            const messageText = `【予約申込】
+■お名前：${name}
+■お電話番号：${phone}
+■ご住所：${address}
+■希望日①：${formatDate(date1)}
+■希望日②：${formatDate(date2)}
+■希望日③：${formatDate(date3)}
+■ご希望の撮影内容：
+${photoTypes.map(type => `・${type}`).join('\n')}
 
+上記の内容で予約を送信しました。確定までしばらくお待ちください。`;
+
+            // LINEにメッセージを送信
             liff.sendMessages([
                 {
                     type: 'text',
