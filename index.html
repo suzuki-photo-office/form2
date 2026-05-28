@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>予約フォーム</title>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background-color: #f4f4f4; color: #333; }
+        h2 { text-align: center; font-size: 18px; margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
+        input { width: 100%; padding: 12px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; }
+        button { width: 100%; padding: 14px; background-color: #06C755; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        button:disabled { background-color: #cccccc; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+    <h2>ご予約フォーム</h2>
+    <div class="form-group">
+        <label for="name">お名前</label>
+        <input type="text" id="name" placeholder="例：山田 太郎">
+    </div>
+    <div class="form-group">
+        <label for="datetime">ご希望日時</label>
+        <input type="datetime-local" id="datetime">
+    </div>
+    <button id="submitBtn" onclick="submitForm()" disabled>読み込み中...</button>
+
+    <script>
+        // 【重要】ご自身のLIFF ID（英数字の文字列）に変えてください
+        const MY_LIFF_ID = '2006407169-V0YJVRIl'; 
+
+        // ページ読み込み時の処理
+        document.addEventListener("DOMContentLoaded", function() {
+            liff.init({ liffId: MY_LIFF_ID })
+                .then(() => {
+                    // LINE環境で開かれているか、ログインしているか確認
+                    if (!liff.isLoggedIn()) {
+                        liff.login();
+                    } else {
+                        // LIFFが正常に初期化されたらボタンを有効化
+                        const btn = document.getElementById('submitBtn');
+                        btn.disabled = false;
+                        btn.innerText = '予約内容を送信する';
+                    }
+                })
+                .catch((err) => { 
+                    alert('LIFFの初期化に失敗しました。IDが正しいか確認してください。');
+                    console.error('LIFF初期化失敗', err); 
+                });
+        });
+
+        // ボタン送信時の処理
+        function submitForm() {
+            const name = document.getElementById('name').value;
+            const datetime = document.getElementById('datetime').value;
+
+            if (!name || !datetime) {
+                alert('すべての項目を入力してください。');
+                return;
+            }
+
+            const formattedDate = datetime.replace('T', ' ');
+
+            // 念のため、送信前にメッセージ送信権限（最重要）があるかプログラム側でチェック
+            if (!liff.isApiAvailable('shareTargetPicker') && !liff.isInClient()) {
+                alert('この環境からはメッセージを送信できません。LINEアプリ内のチャットから開いてください。');
+                return;
+            }
+
+            // メッセージ送信処理
+            liff.sendMessages([
+                {
+                    type: 'text',
+                    text: `【予約申込】\nお名前：${name}\n希望日時：${formattedDate}\n\n上記の内容で予約を送信しました。確定までしばらくお待ちください。`
+                }
+            ]).then(() => {
+                liff.closeWindow(); // 成功したら閉じる
+            }).catch((err) => {
+                // エラーの詳細を画面に出して原因を特定しやすくします
+                alert('送信エラー詳細: ' + err.code + ' - ' + err.message);
+                console.error(err);
+            });
+        }
+    </script>
+</body>
+</html>
