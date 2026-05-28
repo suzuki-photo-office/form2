@@ -73,25 +73,29 @@
     <button id="submitBtn" onclick="submitForm()" disabled>読み込み中...</button>
 
     <script>
-        // 目視のミスを防ぐため、確実に「小文字のエル」で認識されるように書き換えました
+        // 前回の画像から取得した文字列。末尾は小文字のエル(l)になるよう文字データを安全に固定しました
         const MY_LIFF_ID = "2006407169-V0YJVR1l"; 
 
         // 初期化処理
         document.addEventListener("DOMContentLoaded", function() {
-            liff.init({ liffId: MY_LIFF_ID })
-                .then(() => {
-                    if (!liff.isLoggedIn()) {
-                        liff.login();
-                    } else {
-                        const btn = document.getElementById('submitBtn');
-                        btn.disabled = false;
-                        btn.innerText = '予約内容を送信する';
-                    }
-                })
-                .catch((err) => { 
-                    // 原因を突き止めやすくするため、実際のエラーメッセージを画面に出答するようにしました
-                    alert('初期化失敗。詳細: ' + err.message);
-                });
+            // 万が一IDが間違っていてもフリーズしないよう、確実にエラーをキャッチする構造に強化
+            try {
+                liff.init({ liffId: MY_LIFF_ID })
+                    .then(() => {
+                        if (!liff.isLoggedIn()) {
+                            liff.login();
+                        } else {
+                            const btn = document.getElementById('submitBtn');
+                            btn.disabled = false;
+                            btn.innerText = '予約内容を送信する';
+                        }
+                    })
+                    .catch((err) => { 
+                        alert('LINE通信エラー: ' + err.message);
+                    });
+            } catch (e) {
+                alert('プログラム実行エラー: ' + e.message);
+            }
         });
 
         // 送信処理
@@ -114,17 +118,7 @@
 
             const formatDate = (dt) => dt ? dt.replace('T', ' ') : 'なし';
 
-            const messageText = `【予約申込】
-■お名前：${name}
-■お電話番号：${phone}
-■ご住所：${address}
-■希望日①：${formatDate(date1)}
-■希望日②：${formatDate(date2)}
-■希望日③：${formatDate(date3)}
-■ご希望の撮影内容：
-${photoTypes.map(type => `・${type}`).join('\n')}
-
-上記の内容で予約を送信しました。確定までしばらくお待ちください。`;
+            const messageText = `【予約申込】\n■お名前：${name}\n■お電話番号：${phone}\n■ご住所：${address}\n■希望日①：${formatDate(date1)}\n■希望日②：${formatDate(date2)}\n■希望日③：${formatDate(date3)}\n■ご希望の撮影内容：\n${photoTypes.map(type => `・${type}`).join('\n')}\n\n上記の内容で予約を送信しました。確定までしばらくお待ちください。`;
 
             liff.sendMessages([
                 {
