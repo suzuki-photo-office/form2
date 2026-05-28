@@ -73,25 +73,28 @@
     <button id="submitBtn" onclick="submitForm()" disabled>読み込み中...</button>
 
     <script>
-        // 目視のミスを防ぐため、確実に「小文字のエル」で認識されるように書き換えました
+        // ご提示いただいた正しいLIFF IDを直接埋め込みました（末尾は大文字のアイ「I」）
         const MY_LIFF_ID = "2006407169-V0YJVRIl"; 
 
         // 初期化処理
         document.addEventListener("DOMContentLoaded", function() {
-            liff.init({ liffId: MY_LIFF_ID })
-                .then(() => {
-                    if (!liff.isLoggedIn()) {
-                        liff.login();
-                    } else {
-                        const btn = document.getElementById('submitBtn');
-                        btn.disabled = false;
-                        btn.innerText = '予約内容を送信する';
-                    }
-                })
-                .catch((err) => { 
-                    // 原因を突き止めやすくするため、実際のエラーメッセージを画面に出答するようにしました
-                    alert('初期化失敗。詳細: ' + err.message);
-                });
+            try {
+                liff.init({ liffId: MY_LIFF_ID })
+                    .then(() => {
+                        if (!liff.isLoggedIn()) {
+                            liff.login();
+                        } else {
+                            const btn = document.getElementById('submitBtn');
+                            btn.disabled = false;
+                            btn.innerText = '予約内容を送信する';
+                        }
+                    })
+                    .catch((err) => { 
+                        alert('LINE通信エラー: ' + err.message);
+                    });
+            } catch (e) {
+                alert('プログラム実行エラー: ' + e.message);
+            }
         });
 
         // 送信処理
